@@ -5,6 +5,38 @@ contract('Pledgeo', function(accounts) {
     const owner = accounts[0]
     var communityId
 
+    it("should pause the contract only if the caller is the contract owner", async () => {
+        let instance = await Pledgeo.deployed()
+
+        try {
+            await instance.pause({from: accounts[1]})
+            assert.fail('')
+        }
+        catch (error) {
+            const revertFound = error.toString().search('revert')
+            if (revertFound <= 0) {
+                assert.fail(`Expected "revert", got ${error} instead`)
+            }
+        }
+        let eventEmittedTx1 = false
+        let tx1 = await instance.pause({from: owner})
+        if (tx1.logs[0].event) {
+		    eventEmittedTx1 = true
+        }
+        let result1 = await instance.paused()
+        assert.equal(eventEmittedTx1, true, 'pausing the contract should emit a Pause event')
+        assert.equal(result1, true, 'the value of pause should be true')
+
+        let eventEmittedTx2 = false
+        let tx2 = await instance.unpause({from: owner})
+        if (tx2.logs[0].event) {
+		    eventEmittedTx2 = true
+        }
+        let result2 = await instance.paused()
+        assert.equal(eventEmittedTx2, true, 'pausing the contract should emit a Pause event')
+        assert.equal(result2, false, 'the value of pause should be false')
+    })
+
     it("should add and remove a platform manager with the provided address and the proper caller restrictions", async() => {
         let instance = await Pledgeo.deployed()
 

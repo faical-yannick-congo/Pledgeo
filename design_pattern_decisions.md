@@ -19,3 +19,11 @@ State variables and calculations were moved out of the loops to reduce gas consu
 #### Restricted access
 
 'Require' statements were used to restrict access to certain functions and establish the permissions. They were also used to check the validity of the input parameters. Those that were used repeatedly were turned into modifiers.
+
+#### Visibility of functions and state variables
+
+The visibility of functions and state variables was explicitly label, and 'external' was chosen over 'public' for functions that are not called from within the contract itself to optimize gas consumption.
+
+#### Short circuit rules
+
+When the operators '||' and '&&' were used, the condition with the lower cost to calcuate was written first over the most expensive one to save more gas if short circuited.

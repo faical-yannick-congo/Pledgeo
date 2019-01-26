@@ -5,7 +5,7 @@ Date:   January 2019
 File:   README
 ---
 
-Consensys Academy's 2018 Developer Program Final Project
+Pledgeo - Consensys Academy's 2018 Developer Program Final Project
 ===
 
 ## Table of contents:
@@ -16,7 +16,7 @@ Consensys Academy's 2018 Developer Program Final Project
 - [Design pattern decisions](https://github.com/loic1/symmetrical-waffle/blob/master/design_pattern_decisions.md)
 - [Avoiding common attacks](https://github.com/loic1/symmetrical-waffle/blob/master/avoiding_common_attacks.md)
 - [Installing and running the app](#installing-and-running-the-app)
-- [How to use this dapp?](#how-to-use-this-dapp)
+- [How to use this app?](#how-to-use-this-app)
 - [Deployed addresses](https://github.com/loic1/symmetrical-waffle/blob/master/deployed_addresses.txt)
 - [Future work](#future-work)
 - [Lessons learned](#lessons-learned)
@@ -74,33 +74,32 @@ Prerequisites: Node.js, git, [MetaMask](https://metamask.io/) extension in Chrom
 $ npm install -g truffle
 $ npm install -g ganache-cli
 ```
-2. Clone this repository, cd into it, and install node modules:
-```
-$ git clone https://github.com/loic1/pledgeo
-$ cd pledgeo/
-$ npm install
-```
-3. Open another terminal and start a local blockchain using Ganache:
+2. Start a local blockchain using Ganache:
 ```
 $ ganache-cli
+```
+3. Open another terminal, clone this repository, and cd into it:
+```
+$ git clone https://github.com/loic1/Pledgeo
+$ cd pledgeo/
 ```
 4. Compile and migrate the contracts to the blockchain:
 ```
 $ truffle compile
 $ truffle migrate
 ```
-5. Run the tests to make sure the contracts and the blockchain are working properly.
+5. Run the tests to make sure the contracts and the blockchain are working properly:
 ```
 $ truffle test
 ```
-6. Copy the mnemonic seed phrase from Ganache (see exemple below), paste it in Metamask, and check that it points to a private network on localhost port 8445:
+6. Copy the mnemonic seed phrase from Ganache (see exemple below), open the browser and paste it in Metamask, and check that it points to a private network on localhost port 8445:
 ```
 HD Wallet
 ==================
 Mnemonic:      ensure cactus knee bright baby coral shove fame winner outdoor staff infant
 
 ```
-7. Cd into ./client, install the dependancies, and serve a local instance of the application on your machine:
+7. Cd into ./client, install the node modules, and serve a local instance of the application on your machine:
 The server will launch the app at http://localhost:3000
 ```
 $ cd ./client/

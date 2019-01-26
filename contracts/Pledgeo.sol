@@ -69,11 +69,7 @@ contract Pledgeo is Pausable {
     enum State {Suggested, Submitted, Approved, Dropped, Cancelled, Disputed, Concluded}
 
     /* Modifiers */
-
-    modifier onlyContractOwner() {
-        require(contractOwner == msg.sender, "Only the contract owner can call this function");
-        _;
-    }
+    
     modifier validCommunity(uint _communityId) {
         require(communities[_communityId].valid == true, "The community with the given id must be valid");
         _;
@@ -154,7 +150,7 @@ contract Pledgeo is Pausable {
     * @dev addPlatformManager(): add an account to the list of platform managers
     * @param _manager address of the manager to add
     */
-    function addPlatformManager(address _manager) external whenNotPaused onlyContractOwner {
+    function addPlatformManager(address _manager) external whenNotPaused onlyOwner {
         platformManagers[_manager] = true;
         emit AddPlatformManager(_manager);
     }
@@ -163,7 +159,7 @@ contract Pledgeo is Pausable {
     * @dev removePlatformManager(): remove an account from the list of platform managers
     * @param _manager address of the manager to remove
     */
-    function removePlatformManager(address _manager) external whenNotPaused onlyContractOwner {
+    function removePlatformManager(address _manager) external whenNotPaused onlyOwner {
         delete platformManagers[_manager];
         emit RemovePlatformManager(_manager);
     }
@@ -201,8 +197,9 @@ contract Pledgeo is Pausable {
 
     /**
     * @dev addBusiness(): add a new Business
+    * @param _description description of the Business to add (may include any necessary information)
     */ 
-    function addBusiness(string calldata _description) external whenNotPaused { // string calldata _description
+    function addBusiness(string calldata _description) external whenNotPaused {
         businesses[businessId].owner = msg.sender;
         businesses[businessId].description = _description;
         emit AddBusiness(businessId);
@@ -415,11 +412,13 @@ contract Pledgeo is Pausable {
         require(businesses[events[_eventId].businessId].owner == msg.sender, "An event can only be canceled by the business owner who added it");
         address payable [] memory listOfParticipants = events[_eventId].listOfParticipants;
         uint nbOfParticipants = listOfParticipants.length;
-         //! division integer openzepellin safemath
+        require(nbOfParticipants > 0);
         uint participantsRefund = events[_eventId].businessOwnerPledge / nbOfParticipants;
         for (uint i = 0; i < nbOfParticipants; i++) {
             pendingWithdrawals[listOfParticipants[i]] += participantsRefund;
         }
+        uint remainder = participantsRefund * nbOfParticipants - events[_eventId].businessOwnerPledge;
+        pendingWithdrawals[listOfParticipants[0]] += remainder;
         events[_eventId].state = State.Cancelled;
         emit CancelEvent(_eventId);
     }
@@ -460,19 +459,19 @@ contract Pledgeo is Pausable {
         address payable [] memory listOfParticipants = events[_eventId].listOfParticipants;
         uint nbOfParticipants = listOfParticipants.length;
         if (roomId != 0) {
-            pendingWithdrawals[rooms[events[_eventId].roomId].owner] += rooms[events[_eventId].roomId].compensationRate * events[_eventId].participantPledge * nbOfParticipants;
-            uint participantsRefund = (1 - events[_eventId].transportationCommissionRate - rooms[events[_eventId].roomId].compensationRate) * events[_eventId].participantPledge;
+            pendingWithdrawals[rooms[events[_eventId].roomId].owner] += rooms[events[_eventId].roomId].compensationRate / 100 * events[_eventId].participantPledge * nbOfParticipants;
+            uint participantsRefund = (1 - events[_eventId].transportationCommissionRate / 100 - rooms[events[_eventId].roomId].compensationRate / 100) * events[_eventId].participantPledge;
             for (uint i = 0; i < nbOfParticipants; i++) {
                 pendingWithdrawals[listOfParticipants[i]] += participantsRefund;
             }
-            pendingWithdrawals[businesses[events[_eventId].businessId].owner] += events[_eventId].businessOwnerPledge + (events[_eventId].transportationCommissionRate - rooms[events[_eventId].roomId].compensationRate) * events[_eventId].participantPledge * nbOfParticipants;
+            pendingWithdrawals[businesses[events[_eventId].businessId].owner] += events[_eventId].businessOwnerPledge + (events[_eventId].transportationCommissionRate / 100 - rooms[events[_eventId].roomId].compensationRate) * events[_eventId].participantPledge * nbOfParticipants;
         }
         else {
-            uint participantsRefund = (1 - events[_eventId].transportationCommissionRate) * events[_eventId].participantPledge; 
+            uint participantsRefund = (1 - events[_eventId].transportationCommissionRate / 100) * events[_eventId].participantPledge; 
             for (uint i = 0; i < nbOfParticipants; i++) {
                 pendingWithdrawals[listOfParticipants[i]] += participantsRefund;
             }
-            pendingWithdrawals[businesses[events[_eventId].businessId].owner] += events[_eventId].businessOwnerPledge + events[_eventId].transportationCommissionRate * events[_eventId].participantPledge * nbOfParticipants;
+            pendingWithdrawals[businesses[events[_eventId].businessId].owner] += events[_eventId].businessOwnerPledge + events[_eventId].transportationCommissionRate / 100 * events[_eventId].participantPledge * nbOfParticipants;
         }
         events[_eventId].state = State.Concluded;  
         emit ConcludeEvent(_eventId);
@@ -537,7 +536,7 @@ contract Pledgeo is Pausable {
     }
 
     /**
-    * @dev currentTime(): Functions used for Javascript tests
+    * @dev currentTime(): Function used for Javascript tests
     * @return time in epoch seconds
     */
     function currentTime() external view returns (uint256 _currentTime) {
