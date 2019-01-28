@@ -1,2 +1,2 @@
 The Pledgeo.sol contract is deployed on Rinkeby at Address:
-<address>
+0x06bA90BaD6873f16dB209948e18eaA069E18fceC
