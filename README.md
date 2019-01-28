@@ -81,7 +81,7 @@ $ ganache-cli
 3. Open another terminal, clone this repository, and cd into it:
 ```
 $ git clone https://github.com/loic1/Pledgeo
-$ cd pledgeo/
+$ cd Pledgeo/
 ```
 4. Compile and migrate the contracts to the blockchain:
 ```
@@ -103,7 +103,7 @@ Mnemonic:      ensure cactus knee bright baby coral shove fame winner outdoor st
 The server will launch the app at http://localhost:3000
 ```
 $ cd ./client/
-$ npm install
+$ npm install       //This downloads and installs the necessary modules and should take a few minutes
 $ npm start
 ```
 8. Done! :tada: If everything goes well, you will see this:

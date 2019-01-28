@@ -137,6 +137,8 @@ contract Pledgeo is Pausable {
     event SubmitComplaint(uint eventId, address complainant);
     event ConcludeEventWithComplaints(uint eventId, address indexed platformManager);
 
+    event DestroyContract(address, address, uint);
+
     /* Functions */
 
     /**
@@ -541,5 +543,16 @@ contract Pledgeo is Pausable {
     */
     function currentTime() external view returns (uint256 _currentTime) {
         return now;
+    }
+
+    /**
+    * @dev destroyContract(): destroy the contract and send ether balance to the contract owner (development purposes)
+    * @notice selfdestruct is an in-build method in solidity
+    * selfdestruct will kill the contract and transfer the ether to specified address
+    * in ethereum blockchain it is not possible to remove anything but can be nullified 
+    */
+    function destroyContract() external onlyOwner {
+        emit DestroyContract(msg.sender, address(this), now);
+        selfdestruct(contractOwner);
     }
 }

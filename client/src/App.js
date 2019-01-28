@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Form from 'react-bootstrap/lib/Form';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
-// import HelpBlock from 'react-bootstrap/lib/HelpBlock';
+import HelpBlock from 'react-bootstrap/lib/HelpBlock';
 import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
 import Panel from 'react-bootstrap/lib/Panel';
@@ -33,6 +33,7 @@ class App extends Component {
       etherscanLink: "https://rinkeby.etherscan.io",
       contractOwner: null,
       account: null,
+      balance: null,
       web3: null
     }
     this.handleAddPlatformManager = this.handleAddPlatformManager.bind(this)
@@ -44,10 +45,13 @@ class App extends Component {
   componentDidMount = async () => {
     try {
       // Get network provider and web3 instance.
-      const web3 = await getWeb3();
+      var web3 = await getWeb3();
 
-      // Use web3 to get the user's accounts.
+      // Use web3 to get the user's accounts
       const accounts = await web3.eth.getAccounts();
+      const account = accounts[0];
+      var balance = await web3.eth.getBalance(accounts[0]);
+      balance = balance/10**18;
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
@@ -59,7 +63,7 @@ class App extends Component {
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ pledgeoInstance: instance, web3: web3, contractOwner: accounts[0], account: accounts[1]});
+      this.setState({ pledgeoInstance: instance, web3: web3, account: account, balance: balance});
       this.addEventListener(this)
     }
     catch (error) {
@@ -71,7 +75,7 @@ class App extends Component {
     }
   };
 
-  // Handle form data change
+  // Handle form data change 
   handleChangeAddPlatformManager(event) {
       switch(event.target.name) {
         case "managerAddress":
@@ -80,8 +84,8 @@ class App extends Component {
       }
   }
 
-    // Handle form data change
-    handleChangeAddCommunity(event) {
+  // Handle form data change
+  handleChangeAddCommunity(event) {
       switch(event.target.name) {
         case "communityDescription":
               this.setState({"communityDescription": event.target.value})
@@ -93,7 +97,7 @@ class App extends Component {
   async handleAddPlatformManager(event) {
     if (typeof this.state.pledgeoInstance !== 'undefined') {
       event.preventDefault();
-      let result = await this.state.pledgeoInstance.methods.addPlatformManager(this.state.managerAddress).send({from: this.state.contractOwner})
+      let result = await this.state.pledgeoInstance.methods.addPlatformManager(this.state.managerAddress).send({from: this.state.account})
       this.setLastTransactionDetails(result)
     }
   }
@@ -142,13 +146,15 @@ class App extends Component {
     }
     return (
       <div className="App">
+        <h2>Pledgeo</h2>
         <Grid>
           <Row>
-            <a href={this.state.etherscanLink} target="_blank">Last Transaction Details</a>
+            <HelpBlock>Current account: {this.state.account}</HelpBlock>
+            <HelpBlock>Balance: {this.state.balance}</HelpBlock>
           </Row>
           <Row>
             <Panel>
-              <Panel.Heading>Pledgeo</Panel.Heading>
+              <Panel.Heading>Platform functions</Panel.Heading>
               <Form onSubmit={this.handleAddPlatformManager}>
                 <FormGroup
                   controlId="fromCreatePlatformManager"
@@ -182,20 +188,23 @@ class App extends Component {
         </Grid>
         <Row>
           <Panel>
-            <Panel.Heading>"AddPlatformManager" Events</Panel.Heading>
+            <Panel.Heading>Platform managers added</Panel.Heading>
             <BootstrapTable data={this.state.platformManagers} striped hover>
-              <TableHeaderColumn isKey dataField='manager'>Platform manager address</TableHeaderColumn>
+              <TableHeaderColumn isKey dataField='manager'>Address</TableHeaderColumn>
             </BootstrapTable>
           </Panel>
         </Row>
         <Row>
           <Panel>
-            <Panel.Heading>"AddCommunity" Events</Panel.Heading>
+            <Panel.Heading>Communities added</Panel.Heading>
             <BootstrapTable data={this.state.communities} striped hover>
               <TableHeaderColumn isKey dataField='community_id'>Community ID</TableHeaderColumn>
-              <TableHeaderColumn dataField='manager'>Platform manager address</TableHeaderColumn>
+              <TableHeaderColumn dataField='manager'>Creator address</TableHeaderColumn>
             </BootstrapTable>
           </Panel>
+        </Row>
+        <Row>
+          <a href={this.state.etherscanLink} target="_blank">Last Transaction Details</a>
         </Row>
       </div>
     );

@@ -6,7 +6,7 @@ All of the contracts imported (Pausable and Ownable libraries) come from safe so
 
 #### Avoiding tx.origin
 
-'msg.origin' was used throughout the contarct rather than 'tx.origin' which may cause points of failure. 
+'msg.origin' was used throughout the contract rather than 'tx.origin' which may cause points of failure. 
 
 #### Withdrawal pattern and reentrancy
 
@@ -22,6 +22,6 @@ function withdrawalance() public {
 }
 ```
 
-#### Use of state machines
+#### Poison data
 
-A number of functions are restricted from being called unless a certain state condition is met. 
+The functions are restricted (through 'Require' statements) from being called unless a certain state condition is met (state machines), the input parameters are valid, and the calling addresses are the ones permissioned.
