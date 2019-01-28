@@ -50,7 +50,7 @@ The smart contracts are written in [Solidity](https://solidity.readthedocs.io/) 
 
 They can be deployed to an [Ethereum](https://ethereum.org) blockchain, be it the public [mainnet](https://etherscan.io), a public testnet like [Rinkeby](https://rinkeby.etherscan.io), a private production blockchain, or on a local development blockchain like [Ganache](https://truffleframework.com/ganache) and [Truffle Develop](https://truffleframework.com/docs/truffle/getting-started/using-truffle-develop-and-the-console).
 
-A simple React.js app that connects to the Ethereum back-end using [Web3.js](https://web3js.readthedocs.io) allows to interact with the platform directly in the browser.
+A simple React.js app that connects to the Ethereum back-end using [Web3.js](https://web3js.readthedocs.io) allows to interact with the platform directly in the browser (only basic functionalities of the contracts are implemented at the moment).
 
 The Ethereum contracts rely on three OpenZeppelin libraries:
 - Ownable contract
@@ -120,6 +120,7 @@ See [deployed_addresses.txt](deployed_addresses.txt)
 
 ## Future work
 
+- Implement Metamask account change listener
 - Implement Oraclize or Ethereum Alarm Clock
 - Add number of recurrences and recurrence interval to business event parameters
 - Implement business event privacy levels (public, private, secret)
